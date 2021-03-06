@@ -35,5 +35,5 @@ do
 
     # concatenate all infos to append .csv
     echo "$angle,$class,$energy,[$pixels]"
-  done >> dataset.csv
+  done >> $DATASET"_dataset.csv"
 done
