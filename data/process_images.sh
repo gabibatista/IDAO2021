@@ -3,6 +3,8 @@
 DATASET=${1:-'train'}
 CLASSES=${2:-'ER NR'}
 
+echo "angle,class,energy,pixels" >> $DATASET"_dataset.csv"
+
 for value in $CLASSES
 do
   path="$(echo "$DATASET/$value")"
@@ -34,6 +36,8 @@ do
     energy=$(echo "$i" | cut -d '_' -f 7)
 
     # concatenate all infos to append .csv
-    echo "$angle,$class,$energy,[$pixels]"
+    echo "$angle,$class,$energy,[$pixels["
   done >> $DATASET"_dataset.csv"
+
+  zip $DATASET"_dataset.zip" $DATASET"_dataset.csv"
 done
