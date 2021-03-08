@@ -3,11 +3,15 @@
 DATASET=${1:-'train'}
 CLASSES=${2:-'ER NR'}
 
-echo "angle,class,energy,pixels" >> $DATASET"_dataset.csv"
-
 for value in $CLASSES
 do
-  path="$(echo "$DATASET/$value")"
+  if [ $DATASET == 'train' ] 
+  then
+    path="$(echo "$DATASET/$value")"
+  else
+    path="$(echo "$DATASET")"
+  fi
+
   for image in "$path"/*.png
   do
     i=${image##*/}
@@ -26,18 +30,28 @@ do
     done < "$path/rgb/$i.txt"
     pixels="${pixels:1:${#pixels}-2}" # removing first and last characters (,)
 
-    # extracting angle from file name
-    angle=$(echo "$i" | cut -d '_' -f 1)
+    if [ $DATASET == 'train' ]
+    then
+      # extracting angle from file name
+      angle=$(echo "$i" | cut --only-delimited -d '_' -f 1)
 
-    # extracting class (ER or NR) from file name
-    class=$(echo "$i" | cut -d '_' -f 6)
+      # extracting energy of the particle (keV) from file name
+      if [ $value == 'ER' ]
+      then
+        energy=$(echo "$i" | cut --only-delimited -d '_' -f 7)
+      else
+        energy=$(echo "$i" | cut --only-delimited -d '_' -f 8)
+      fi
 
-    # extracting energy of the particle (keV) from file name
-    energy=$(echo "$i" | cut -d '_' -f 7)
+      # concatenate infos and append .csv
+      echo "$angle,$value,$energy,$pixels"
 
-    # concatenate all infos to append .csv
-    echo "$angle,$class,$energy,[$pixels["
+    else
+      echo "$pixels"
+    fi
+
   done >> $DATASET"_dataset.csv"
 
-  zip $DATASET"_dataset.zip" $DATASET"_dataset.csv"
 done
+
+zip "./"$DATASET"_dataset.zip" $DATASET"_dataset.csv"
