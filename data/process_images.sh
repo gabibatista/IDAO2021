@@ -47,7 +47,7 @@ do
       echo "$angle,$value,$energy,$pixels"
 
     else
-      echo "$pixels"
+      echo "$i,$pixels"
     fi
 
   done >> $DATASET"_dataset.csv"
